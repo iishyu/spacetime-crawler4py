@@ -1,3 +1,4 @@
+import tokenize
 import re
 from urllib.parse import urlparse
 
@@ -23,7 +24,10 @@ def is_valid(url):
     # There are already some conditions that return False.
     try:
         parsed = urlparse(url)
+        urls = { "ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu" }
         if parsed.scheme not in set(["http", "https"]):
+            return False
+        if parsed.netloc not in urls:
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
