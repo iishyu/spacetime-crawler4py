@@ -59,12 +59,26 @@ class Database:
         return url in self.db
 
     def generate_fingerprint(self, url):
-        for word, freq in self.db[url]:
-            h = hashlib.md5(word.encode("utf-8"))
+        vec = [ [0] for _ in range(16) ]
 
-            vec = [ [0] for _ in range(16) ]
+        for word, freq in self.db[url]:
+            digest = hashlib.md5(word.encode("utf-8")).digest()
+            h = int.from_bytes(digest[:2], "big")
 
             for i in range(16):
+                bit = (h >> i) & 1
+                if bit == 1:
+                    vec[bit] += freq
+                else:
+                    vec[bit] -= freq
 
+        fingerprint = "0000000000000000"
 
-    def is_similar(self, url_dict):
+        for i in range(len(vec)):
+            if vec[i] > 0:
+                fingerprint[i] = "1"
+
+        self.fingerprints.add(fingerprint)
+
+    def is_similar(self, fingerprint):
+        return fingerprint in self.fingerprints
