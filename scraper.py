@@ -1,39 +1,47 @@
-import tokenize
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin, urldefrag
+from bs4 import BeautifulSoup
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
+
+
+# Extracts hyperlinks from a webpage, converting them into absolute URLs,
+# while also removing URL fragments and duplicates, returning the cleaned links
 def extract_next_links(url, resp):
+    # List to hold URLS
     links = []
 
-    # Check if the webpage loaded
+    # Checks whether webpage loaded - 200 = webpage loaded successfully 
     if resp.status != 200 or resp.raw_response is None:
         return links
 
-    # Get HTML content
+    # Gets the HTML content from the webpage
     content = resp.raw_response.content
 
-    # Skip empty pages
+    # Skip the empty pages
     if not content:
         return links
 
-    # Parse HTML
+    # Parse HTML using BeautifulSoup
     soup = BeautifulSoup(content, "html.parser")
 
     # Use final URL
     base_url = resp.url or url
 
     # Find all hyperlinks
+    # searches HTML for <a> tags that have href attribute
     for tag in soup.find_all("a", href=True):
+
+        # extracts url from htmlhyperlink
         href = tag["href"]
 
-        # Convert to absolute URL
+        # Absolute URL convert
         absolute_url = urljoin(base_url, href)
 
-        # Remove fragments
+        # Removes the fragments
         clean_url, fragment = urldefrag(absolute_url)
 
         links.append(clean_url)
@@ -46,10 +54,7 @@ def is_valid(url):
     # There are already some conditions that return False.
     try:
         parsed = urlparse(url)
-        urls = { "ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu" }
         if parsed.scheme not in set(["http", "https"]):
-            return False
-        if parsed.netloc not in urls:
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
