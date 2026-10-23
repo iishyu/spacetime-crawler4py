@@ -1,3 +1,4 @@
+import tokenizer
 import re
 from urllib.parse import urlparse, urljoin, urldefrag, urlsplit, quote
 from bs4 import BeautifulSoup
@@ -72,7 +73,8 @@ def is_valid(url):
     # There are already some conditions that return False.
     try:
         parsed = urlparse(url)
-        if parsed.scheme not in set(["http", "https"]):
+        urls = { "ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu" }
+        if parsed.scheme not in set(["http", "https"]) or parsed.hostname not in urls:
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
