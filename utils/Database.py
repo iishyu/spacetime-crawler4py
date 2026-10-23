@@ -75,13 +75,13 @@ class Database:
         return url in self.db
 
     def generate_fingerprint(self, url):
-        vec = [0] * 16
+        vec = [0] * 64
 
         for word, freq in self.db[url].items():
             digest = hashlib.md5(word.encode("utf-8")).digest()
-            h = int.from_bytes(digest[:2], "big")
+            h = int.from_bytes(digest[:8], "big")
 
-            for i in range(16):
+            for i in range(64):
                 bit = (h >> i) & 1
                 if bit == 1:
                     vec[i] += freq
@@ -94,11 +94,11 @@ class Database:
             if vec[i] > 0:
                 fingerprint |= 1 << i
 
-        self.fingerprints.add(fingerprint)
+        return fingerprint
 
     def is_similar(self, fingerprint, threshold=3):
         for seen in self.fingerprints:
-            diff = sum(c1 != c2 for c1,c2 in zip(seen, fingerprint))
+            diff = bin(seen ^ fingerprint).count("1")
             if diff <= threshold: return True
 
         return False
