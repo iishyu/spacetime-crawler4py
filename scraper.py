@@ -1,13 +1,25 @@
 import tokenizer
 import re
-from urllib.parse import urlparse, urljoin, urldefrag
+from urllib.parse import urlparse, urljoin, urldefrag, urlsplit, quote
 from bs4 import BeautifulSoup
+
+MAX_BYTES_THRESHOLD = 50 * 1024**2
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
 
+# used for handling non-ascii urls, and converting them into ascii-form while preserving
+# important parts of url (like : // ?)
+def to_ascii_url(url):
+    url = url.strip()
+
+    if url.isascii():
+        return url
+
+    # builds url while omitting things that are important to url (safe like :// ? etc)
+    return quote(url, safe=':/?=%~&#@') # double chk if this is exhaustive of every url pattern
 
 # Extracts hyperlinks from a webpage, converting them into absolute URLs,
 # while also removing URL fragments and duplicates, returning the cleaned links
@@ -23,7 +35,7 @@ def extract_next_links(url, resp):
     content = resp.raw_response.content
 
     # Skip the empty pages
-    if not content:
+    if not content or (len(content) > MAX_BYTES_THRESHOLD):
         return links
 
     # Parse HTML using BeautifulSoup
@@ -39,13 +51,19 @@ def extract_next_links(url, resp):
         # extracts url from htmlhyperlink
         href = tag["href"]
 
-        # Absolute URL convert
-        absolute_url = urljoin(base_url, href)
+        # Try-except so that invalid urls dont crash crawler (it just keeps going)
+        try:
+            # Absolute URL convert
+            absolute_url = urljoin(base_url, href)
 
-        # Removes the fragments
-        clean_url, fragment = urldefrag(absolute_url)
+            # Removes the fragments
+            clean_url, fragment = urldefrag(absolute_url)
+        except ValueError:
+            # consider logging this later to understand if there's bug
+            continue
 
-        links.append(clean_url)
+        # converts url to ascii form, maintaining expected url structure (non-ascii will cause errors)
+        links.append(to_ascii_url(clean_url))
 
     return list(set(links))
 
@@ -56,8 +74,21 @@ def is_valid(url):
     try:
         parsed = urlparse(url)
         urls = { "ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu" }
-        if parsed.scheme not in set(["http", "https"]) or parsed.hostname not in urls:
+        if parsed.scheme not in {"http", "https"}:
             return False
+
+        hostname = parsed.hostname
+        if hostname is None:
+            return False
+
+        valid_address = False
+        for domain in urls:
+            if hostname == domain or hostname.endswith("."+domain):
+                valid_address = True
+                break
+        if not valid_address:
+            return False
+        
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
