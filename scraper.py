@@ -21,6 +21,11 @@ def to_ascii_url(url):
     # builds url while omitting things that are important to url (safe like :// ? etc)
     return quote(url, safe=':/?=%~&#@') # double chk if this is exhaustive of every url pattern
 
+
+def extract_words(soup):
+    text = soup.get_text(" ", strip=True)
+    return tokenizer.tokenize_text(text)
+
 # Extracts hyperlinks from a webpage, converting them into absolute URLs,
 # while also removing URL fragments and duplicates, returning the cleaned links
 def extract_next_links(url, resp):
