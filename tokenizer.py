@@ -26,6 +26,19 @@ def tokenize(file_path):
         
     return res
 
+def tokenize_text(text):
+    words = []
+    cur = []
+    for char in text:
+        if char.isalnum() and char.isascii():
+            cur.append(char.lower())
+        elif cur:
+            words.append("".join(cur))
+            cur = []
+    if cur:
+        words.append("".join(cur))
+    return words
+
 # Counts how many times each token appears using a dictionary that maps
 # token -> count. get(token, 0) returns 0 the first time we see a token.
 #
