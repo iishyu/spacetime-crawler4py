@@ -80,5 +80,9 @@ class Database:
 
         self.fingerprints.add(fingerprint)
 
-    def is_similar(self, fingerprint):
-        return fingerprint in self.fingerprints
+    def is_similar(self, fingerprint, threshold=3):
+        for seen in self.fingerprints:
+            diff = sum(c1 != c2 for c1,c2 in zip(seen, fingerprint))
+            if diff <= threshold: return True
+
+        return False
