@@ -2,6 +2,7 @@ import tokenizer
 import hashlib
 import heapq
 from collections import Counter
+from urllib.parse import urldefrag,urlparse
 
 STOP_WORDS = {
         'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any',
@@ -52,6 +53,23 @@ class Database:
         most_common = self.words.most_common(50)
 
         return [word for word, freq in most_common]
+
+    def get_subdomains(self):
+        subdomains = {}
+        for url in self.db:
+            clean_url, _ = urldefrag(url)
+            hostname = urlparse(clean_url).hostname
+            if not hostname.endswith(".ics.uci.edu"):
+                continue
+            if hostname not in subdomains:
+                subdomains[hostname] = set()
+            subdomains[hostname].add(clean_url)
+
+        res = []
+        for hostname in sorted(subdomains):
+            count = len(subdomains[hostname])
+            res.append((hostname, count))
+        return res
 
     def checked(self, url):
         return url in self.db
