@@ -1,7 +1,7 @@
 import tokenizer
 import hashlib
 import heapq
-from collections import defaultdict
+from collections import Counter
 
 STOP_WORDS = {
         'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any',
@@ -36,24 +36,20 @@ STOP_WORDS = {
 class Database:
     def __init__(self):
         self.db = {}
-        self.common_words = defaultdict(int)
+        self.words = Counter()
         self.fingerprints = set()
 
     def add(self, url, url_dict):
         self.db[url] = url_dict
 
-        for word in url_dict:
+        for word, freq in url_dict:
             if word not in STOP_WORDS:
-                self.common_words[word] += url_dict[word]
+                self.words[word] += freq
 
     def get_50_most_common(self):
-        most_common = []
-        for i in range(50):
-            word = max(self.common_words, key = self.common_words.get)
-            most_common.append(word)
-            self.common_words.pop(word)
+        most_common = self.words.most_common(50)
 
-        return most_common
+        return [word for word, freq in most_common]
 
     def checked(self, url):
         return url in self.db
