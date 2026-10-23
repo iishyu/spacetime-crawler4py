@@ -74,8 +74,21 @@ def is_valid(url):
     try:
         parsed = urlparse(url)
         urls = { "ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu" }
-        if parsed.scheme not in set(["http", "https"]) or parsed.hostname not in urls:
+        if parsed.scheme not in {"http", "https"}:
             return False
+
+        hostname = parsed.hostname
+        if hostname is None:
+            return False
+
+        valid_address = False
+        for domain in urls:
+            if hostname == domain or hostname.endswith("."+domain):
+                valid_address = True
+                break
+        if not valid_address:
+            return False
+        
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
