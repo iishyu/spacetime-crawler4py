@@ -46,6 +46,8 @@ class Database:
             if word not in STOP_WORDS:
                 self.common_words[word] += url_dict[word]
 
+        self.generate_fingerprint(url)
+
     def get_50_most_common(self):
         most_common = []
         for i in range(50):
