@@ -5,7 +5,7 @@ from collections import Counter
 import os,json
 from urllib.parse import urldefrag,urlparse
 
-STOP_WORDS = {
+RAW_STOP_WORDS = {
         'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any',
         'are', "aren't", 'as', 'at',
         'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both', 'but', 'by',
@@ -34,6 +34,8 @@ STOP_WORDS = {
         'your', 'yours', 'yourself',
         'yourselves'
     }
+
+STOP_WORDS = {tok for w in RAW_STOP_WORDS for tok in tokenizer.tokenize_text(w)}
 
 class Database:
     def __init__(self):
@@ -109,7 +111,7 @@ class Database:
             if word not in STOP_WORDS:
                 self.words[word] += freq
 
-        self.fingerprints.add(self.generate_fingerprint(url))
+        self.fingerprints.add(self.generate_fingerprint(url_dict))
 
     def get_50_most_common(self):
         most_common = self.words.most_common(50)
@@ -137,10 +139,10 @@ class Database:
         url, _ = urldefrag(url)
         return url in self.db
 
-    def generate_fingerprint(self, url):
+    def generate_fingerprint(self, freqs):
         vec = [0] * 64
 
-        for word, freq in self.db[url].items():
+        for word, freq in freqs.items():
             digest = hashlib.md5(word.encode("utf-8")).digest()
             h = int.from_bytes(digest[:8], "big")
 

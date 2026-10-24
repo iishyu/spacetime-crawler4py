@@ -75,8 +75,16 @@ def extract_next_links(url, resp):
     if not database.checked(page_url):
         words = extract_words(soup)
         freqs = tokenizer.computeWordFrequencies(words)
+
+        # Skip near duplicates
+        if database.is_similar(database.generate_fingerprint(freqs)):
+            return links
+
         database.add(page_url, freqs)
-        database.save() # makes sure it saves instantly incase of crash (can occur anytime) make sure to always save!
+
+        # save every 50 pages
+        if database.get_unique_page_count() % 50 == 0:
+            database.save()
 
     # Find all hyperlinks
     # searches HTML for <a> tags that have href attribute
