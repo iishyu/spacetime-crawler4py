@@ -27,6 +27,7 @@ def to_ascii_url(url):
 
 
 def extract_words(soup):
+    for tag in soup(["script", "style", "noscript"]): tag.decompose()
     text = soup.get_text(" ", strip=True)
     return tokenizer.tokenize_text(text)
 
