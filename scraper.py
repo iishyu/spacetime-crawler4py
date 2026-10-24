@@ -7,6 +7,7 @@ from utils.Database import Database
 
 database = Database()
 MAX_BYTES_THRESHOLD = 50 * 1024**2
+TRAP = re.compile(r"(calendar|[?&]ical=|/\d{4}/\d{2}/|[?&](date|month|year)=)", re.I)
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -22,7 +23,7 @@ def to_ascii_url(url):
         return url
 
     # builds url while omitting things that are important to url (safe like :// ? etc)
-    return quote(url, safe=':/?=%~&#@') # double chk if this is exhaustive of every url pattern
+    return quote(url, safe=":/?#[]@!$&'()*+,;=%~") # double chk if this is exhaustive of every url pattern
 
 
 def extract_words(soup):
@@ -68,7 +69,7 @@ def extract_next_links(url, resp):
 
     # Use final URL
     base_url = resp.url or url
-    page_url, _ = urldefrag(base_url)
+    page_url = normalize_url(urldefrag(base_url)[0])
 
     # If unique, add to database
     if not database.checked(page_url):
@@ -121,6 +122,19 @@ def is_valid(url):
                 valid_address = True
                 break
         if not valid_address:
+            return False
+
+        if len(url) > 250:
+            return False
+
+        segments = [s for s in parsed.path.split("/") if s]
+        if len(segments) > 10:
+            return False
+
+        if any(segments.count(s) > 2 for s in segments):
+            return False
+
+        if TRAP.search(url):
             return False
         
         return not re.match(
