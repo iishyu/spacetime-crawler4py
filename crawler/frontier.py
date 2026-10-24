@@ -5,7 +5,7 @@ from threading import Thread, RLock
 from queue import Queue, Empty
 
 from utils import get_logger, get_urlhash, normalize
-from scraper import is_valid
+from scraper import is_valid, database
 
 class Frontier(object):
     def __init__(self, config, restart):
@@ -25,6 +25,13 @@ class Frontier(object):
             os.remove(self.config.save_file)
         # Load existing save file, or create one if it does not exist.
         self.save = shelve.open(self.config.save_file)
+
+        summary_path = os.path.splitext(self.config.save_file)[0]+"_summary.json"
+        if not restart and not os.path.exists(summary_path):
+            if any(handled for _, handled in self.save.values()):
+                raise FileNotFoundError("Missing the crawl summary file: "+summary_path)
+        # not self.safe chks if we have nothing saved
+        database.load(summary_path, restart=not self.save or restart)
         if restart:
             for url in self.config.seed_urls:
                 self.add_url(url)

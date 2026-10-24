@@ -3,6 +3,9 @@ import re
 from urllib.parse import urlparse, urljoin, urldefrag, urlsplit, quote
 from bs4 import BeautifulSoup
 
+from utils.Database import Database
+
+database = Database()
 MAX_BYTES_THRESHOLD = 50 * 1024**2
 
 def scraper(url, resp):
@@ -48,6 +51,14 @@ def extract_next_links(url, resp):
 
     # Use final URL
     base_url = resp.url or url
+    page_url, _ = urldefrag(base_url)
+
+    # If unique, add to database
+    if not database.checked(page_url):
+        words = extract_words(soup)
+        freqs = tokenizer.computeWordFrequencies(words)
+        database.add(page_url, freqs)
+        database.save() # makes sure it saves instantly incase of crash (can occur anytime) make sure to always save!
 
     # Find all hyperlinks
     # searches HTML for <a> tags that have href attribute

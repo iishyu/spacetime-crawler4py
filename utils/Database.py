@@ -2,6 +2,7 @@ import tokenizer
 import hashlib
 import heapq
 from collections import Counter
+import os,json
 from urllib.parse import urldefrag,urlparse
 
 STOP_WORDS = {
@@ -39,11 +40,72 @@ class Database:
         self.db = {}
         self.words = Counter()
         self.fingerprints = set()
+        self.save_path = None
+
+    def get_unique_page_count(self):
+            return len(self.db)
+    
+    def get_longest_page(self):
+        if not self.db:
+            return None, 0
+
+        url = None
+        biggest_word_count = -1
+        for pg, freqs in self.db.items():
+            word_count = sum(freqs.values())
+            if word_count>biggest_word_count:
+                biggest_word_count=word_count
+                url = pg
+        return url,sum(self.db[url].values())
+
+
+    def load(self, path, restart=False):
+        self.save_path = path
+        if restart:
+            self.save()
+            return
+
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                pages = json.load(f)
+        except FileNotFoundError:
+            self.save()
+            return
+
+        for url, freqs in pages.items():
+            self.add(url, freqs)
+
+
+
+    def save(self):
+        if self.save_path is None:
+            raise RuntimeError("save() was called before load(), please call load() first (self.save_path isnt set)")
+
+        #  ensurse that we cleanly write the file (may be issue in json dump or smth), last thing we want is our data getting wiped because of some json error.  
+        path_temp = self.save_path+".temp"
+        with open(path_temp, "w", encoding="utf-8") as f:
+            json.dump(self.db, f)
+        os.replace(path_temp, self.save_path)
+
+    def get_summary(self):
+        url, count = self.get_longest_page()
+        subdoms = self.get_subdomains()
+        return { "unique_pages": self.get_unique_page_count(),
+            "longest_page": {"url": url, "word_count": count},
+            "most_common_words": self.get_50_most_common(),
+            "ics_subdomain_count": len(subdoms),
+            "ics_subdomains": subdoms,
+        }
+    
 
     def add(self, url, url_dict):
+        url, _ = urldefrag(url)
+        if self.checked(url):
+            return
+
         self.db[url] = url_dict
 
-        for word, freq in url_dict:
+        for word, freq in url_dict.items():
             if word not in STOP_WORDS:
                 self.words[word] += freq
 
@@ -72,6 +134,7 @@ class Database:
         return res
 
     def checked(self, url):
+        url, _ = urldefrag(url)
         return url in self.db
 
     def generate_fingerprint(self, url):
