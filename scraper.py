@@ -7,7 +7,11 @@ from utils.Database import Database
 
 database = Database()
 MAX_BYTES_THRESHOLD = 5 * 1024**2
-TRAP = re.compile(r"(calendar|[?&]ical=|/\d{4}/\d{2}/|[?&](date|month|year)=)", re.I)
+TRAP = re.compile(
+    r"(calendar|[?&]ical=|/\d{4}/\d{2}/|[?&](date|month|year)="
+    r"|[?&;]C=[NMSD]|[?&;]O=[AD]"
+    r"|[?&](do|rev|idx|share|replytocom|version|format|action|tab_files)="
+    r")", re.I)
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -58,6 +62,11 @@ def extract_next_links(url, resp):
     if resp.status != 200 or resp.raw_response is None:
         return links
 
+    # Checks if page is HTML
+    content_type = resp.raw_response.headers.get("Content-Type", "").lower()
+    if content_type and "html" not in content_type:
+        return links
+
     # Gets the HTML content from the webpage
     content = resp.raw_response.content
 
@@ -79,9 +88,11 @@ def extract_next_links(url, resp):
     if not database.checked(page_url):
         words = extract_words(soup)
         freqs = tokenizer.computeWordFrequencies(words)
+        fingerprint = database.generate_fingerprint(freqs)
 
         # Skip near duplicates
-        if database.is_similar(database.generate_fingerprint(freqs)):
+        if database.is_similar(fingerprint):
+            database.add(page_url, {})
             return links
 
         database.add(page_url, freqs)

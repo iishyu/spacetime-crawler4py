@@ -111,7 +111,8 @@ class Database:
             if word not in STOP_WORDS:
                 self.words[word] += freq
 
-        self.fingerprints.add(self.generate_fingerprint(url_dict))
+        if url_dict:
+            self.fingerprints.add(self.generate_fingerprint(url_dict))
 
     def get_50_most_common(self):
         most_common = self.words.most_common(50)
