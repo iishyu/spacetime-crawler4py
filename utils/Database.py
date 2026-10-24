@@ -132,7 +132,7 @@ class Database:
         res = []
         for hostname in sorted(subdomains):
             count = len(subdomains[hostname])
-            res.append((hostname, count))
+            res.append((f"http://{hostname}", count))
         return res
 
     def checked(self, url):
