@@ -11,6 +11,8 @@ class Frontier(object):
     def __init__(self, config, restart):
         self.logger = get_logger("FRONTIER")
         self.config = config
+        self.lock = RLock() #creates a lock so only one worker at a time
+        self.active_workers = 0 #tracks how many workers are processing pages currently
         self.to_be_downloaded = list()
         
         if not os.path.exists(self.config.save_file) and not restart:
@@ -47,26 +49,42 @@ class Frontier(object):
             f"Found {tbd_count} urls to be downloaded from {total_count} "
             f"total urls discovered.")
 
+ # Prevent multiple workers from accessing the URL list simultaneously
     def get_tbd_url(self):
-        try:
-            return self.to_be_downloaded.pop()
-        except IndexError:
+        with self.lock:
+            if self.to_be_downloaded:
+                self.active_workers += 1
+                return self.to_be_downloaded.pop()
             return None
 
     def add_url(self, url):
         url = normalize(url)
         urlhash = get_urlhash(url)
-        if urlhash not in self.save:
-            self.save[urlhash] = (url, False)
-            self.save.sync()
-            self.to_be_downloaded.append(url)
-    
+        
+        with self.lock:
+            if urlhash not in self.save:
+                self.save[urlhash] = (url, False)
+                self.save.sync()
+                self.to_be_downloaded.append(url)
+        
     def mark_url_complete(self, url):
         urlhash = get_urlhash(url)
-        if urlhash not in self.save:
-            # This should not happen.
-            self.logger.error(
-                f"Completed url {url}, but have not seen it before.")
 
-        self.save[urlhash] = (url, True)
-        self.save.sync()
+        with self.lock:
+            if urlhash not in self.save:
+                self.logger.error(
+                    f"Completed url {url}, but have not seen it before."
+                )
+            else:
+                self.save[urlhash] = (url, True)
+                self.save.sync()
+
+            self.active_workers -= 1
+            
+    # Check whether all URLs have been processed
+    def is_finished(self):
+        with self.lock:
+            return (
+                not self.to_be_downloaded
+                and self.active_workers == 0
+            )
