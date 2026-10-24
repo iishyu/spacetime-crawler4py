@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from utils.Database import Database
 
 database = Database()
-MAX_BYTES_THRESHOLD = 50 * 1024**2
+MAX_BYTES_THRESHOLD = 5 * 1024**2
 TRAP = re.compile(r"(calendar|[?&]ical=|/\d{4}/\d{2}/|[?&](date|month|year)=)", re.I)
 
 def scraper(url, resp):
@@ -69,8 +69,11 @@ def extract_next_links(url, resp):
     soup = BeautifulSoup(content, "html.parser")
 
     # Use final URL
-    base_url = resp.url or url
+    base_url = resp.raw_response.url or resp.url or url
     page_url = normalize_url(urldefrag(base_url)[0])
+
+    if not is_valid(page_url):
+        return links
 
     # If unique, add to database
     if not database.checked(page_url):
