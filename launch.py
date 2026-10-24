@@ -19,7 +19,8 @@ def main(config_file, restart):
         crawler.start()
     finally:
         database.save()
-        print(json.dumps(database.get_summary(), indent=2))
+        with open("crawl_data.json", "w", encoding="utf-8") as f:
+            json.dump(database.get_summary(), f, indent=2)
 
 
 if __name__ == "__main__":
