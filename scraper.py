@@ -29,6 +29,23 @@ def extract_words(soup):
     text = soup.get_text(" ", strip=True)
     return tokenizer.tokenize_text(text)
 
+def normalize_url(url):
+    # Splits the url into parts
+    p = urlparse(url)
+
+    # Makes host lowercase
+    netloc = p.netloc.lower()
+    
+    # Removes default ports 
+    if netloc.endswith(":80") or netloc.endswith(":443"):
+        netloc = netloc.rsplit(":", 1)[0]
+    
+    # Removes trailing slashes
+    path = p.path.rstrip("/") or "/"
+
+    # Rebuilds url with the cleaned parts
+    return p._replace(scheme=p.scheme.lower(), netloc=netloc, path=path).geturl()
+
 # Extracts hyperlinks from a webpage, converting them into absolute URLs,
 # while also removing URL fragments and duplicates, returning the cleaned links
 def extract_next_links(url, resp):
@@ -74,6 +91,7 @@ def extract_next_links(url, resp):
 
             # Removes the fragments
             clean_url, fragment = urldefrag(absolute_url)
+            clean_url = normalize_url(clean_url)
         except ValueError:
             # consider logging this later to understand if there's bug
             continue
@@ -116,5 +134,5 @@ def is_valid(url):
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
 
     except TypeError:
-        print ("TypeError for ", parsed)
+        print ("TypeError for ", url)
         raise

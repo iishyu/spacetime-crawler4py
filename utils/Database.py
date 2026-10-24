@@ -114,14 +114,14 @@ class Database:
     def get_50_most_common(self):
         most_common = self.words.most_common(50)
 
-        return [word for word, freq in most_common]
+        return most_common
 
     def get_subdomains(self):
         subdomains = {}
         for url in self.db:
             clean_url, _ = urldefrag(url)
             hostname = urlparse(clean_url).hostname
-            if not hostname.endswith(".ics.uci.edu"):
+            if hostname is None or not hostname.endswith(".ics.uci.edu"):
                 continue
             if hostname not in subdomains:
                 subdomains[hostname] = set()
