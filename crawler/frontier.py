@@ -3,9 +3,14 @@ import shelve
 
 from threading import Thread, RLock
 from queue import Queue, Empty
-
+import time
+from collections import defaultdict
+from urllib.parse import urlparse
 from utils import get_logger, get_urlhash, normalize
 from scraper import is_valid, database
+
+def domain_of(url):
+    return ".".join(urlparse(url).hostname.split(".")[-3:])
 
 class Frontier(object):
     def __init__(self, config, restart):
@@ -13,7 +18,8 @@ class Frontier(object):
         self.config = config
         self.lock = RLock() #creates a lock so only one worker at a time
         self.active_workers = 0 #tracks how many workers are processing pages currently
-        self.to_be_downloaded = list()
+        self.to_be_downloaded = defaultdict(list)
+        self.next_ok = defaultdict(float)
         
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.
@@ -50,7 +56,7 @@ class Frontier(object):
         tbd_count = 0
         for url, completed in self.save.values():
             if not completed and is_valid(url):
-                self.to_be_downloaded.append(url)
+                self.to_be_downloaded[domain_of(url)].append(url)
                 tbd_count += 1
         self.logger.info(
             f"Found {tbd_count} urls to be downloaded from {total_count} "
@@ -59,9 +65,12 @@ class Frontier(object):
  # Prevent multiple workers from accessing the URL list simultaneously
     def get_tbd_url(self):
         with self.lock:
-            if self.to_be_downloaded:
-                self.active_workers += 1
-                return self.to_be_downloaded.pop()
+            now = time.monotonic()
+            for domain, urls in self.to_be_downloaded.items():
+                if urls and self.next_ok[domain] <= now:
+                    self.next_ok[domain] = now + 0.5
+                    self.active_workers += 1
+                    return urls.pop()
             return None
 
     def add_url(self, url):
@@ -71,8 +80,7 @@ class Frontier(object):
         with self.lock:
             if urlhash not in self.save:
                 self.save[urlhash] = (url, False)
-                self.save.sync()
-                self.to_be_downloaded.append(url)
+                self.to_be_downloaded[domain_of(url)].append(url)
         
     def mark_url_complete(self, url):
         urlhash = get_urlhash(url)
@@ -92,6 +100,6 @@ class Frontier(object):
     def is_finished(self):
         with self.lock:
             return (
-                not self.to_be_downloaded
+                not any(self.to_be_downloaded.values())
                 and self.active_workers == 0
             )

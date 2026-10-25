@@ -1,11 +1,13 @@
 import tokenizer
 import re
 from urllib.parse import urlparse, urljoin, urldefrag, urlsplit, quote
+import threading
 from bs4 import BeautifulSoup
 
 from utils.Database import Database
 
 database = Database()
+database_lock = threading.Lock()
 MAX_BYTES_THRESHOLD = 5 * 1024**2
 TRAP = re.compile(
     r"(calendar|[?&]ical=|/\d{4}/\d{2}/|[?&](date|month|year)="
@@ -84,22 +86,23 @@ def extract_next_links(url, resp):
     if not is_valid(page_url):
         return links
 
-    # If unique, add to database
-    if not database.checked(page_url):
-        words = extract_words(soup)
-        freqs = tokenizer.computeWordFrequencies(words)
-        fingerprint = database.generate_fingerprint(freqs)
+    with database_lock:
+        # If unique, add to database
+        if not database.checked(page_url):
+            words = extract_words(soup)
+            freqs = tokenizer.computeWordFrequencies(words)
+            fingerprint = database.generate_fingerprint(freqs)
 
-        # Skip near duplicates
-        if database.is_similar(fingerprint):
-            database.add(page_url, {})
-            return links
+            # Skip near duplicates
+            if database.is_similar(fingerprint):
+                database.add(page_url, {})
+                return links
 
-        database.add(page_url, freqs)
+            database.add(page_url, freqs)
 
-        # save every 50 pages
-        if database.get_unique_page_count() % 50 == 0:
-            database.save()
+            # save every 50 pages
+            if database.get_unique_page_count() % 50 == 0:
+                database.save()
 
     # Find all hyperlinks
     # searches HTML for <a> tags that have href attribute
