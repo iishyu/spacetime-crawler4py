@@ -10,9 +10,14 @@ database = Database()
 database_lock = threading.Lock()
 MAX_BYTES_THRESHOLD = 5 * 1024**2
 TRAP = re.compile(
+    # calendars, iCal exports, /YYYY/MM/ archives, date params, Apache sort links
     r"(calendar|[?&]ical=|/\d{4}/\d{2}/|[?&](date|month|year)="
     r"|[?&;]C=[NMSD]|[?&;]O=[AD]"
     r"|[?&](do|rev|idx|share|replytocom|version|format|action|tab_files)="
+    # grape.ics.uci.edu: timeline/changeset/log views, all refused (403)
+    r"|grape\.ics\.uci\.edu/(.*/)?(timeline|changeset|log|browser|report|query|attachment)(/|\?|$)"
+    # flamingo source/release trees: folder listings of code
+    r"|flamingo\.ics\.uci\.edu/(releases|toolkit/src)"
     r")", re.I)
 
 def scraper(url, resp):
