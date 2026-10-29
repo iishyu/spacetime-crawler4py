@@ -18,6 +18,11 @@ TRAP = re.compile(
     r"|grape\.ics\.uci\.edu/(.*/)?(timeline|changeset|log|browser|report|query|attachment)(/|\?|$)"
     # flamingo source/release trees: folder listings of code
     r"|flamingo\.ics\.uci\.edu/(releases|toolkit/src)"
+    # WordPress login redirects and Events Calendar views (isg.ics.uci.edu)
+    r"|wp-login\.php|[?&]redirect_to=|/events/(list|month|day|week|tag|category|photo)"
+    r"|[?&](tribe[-_]\w*|eventDisplay|outlook-ical)="
+    # archive.ics.uci.edu dataset search: endless filter combinations
+    r"|archive\.ics\.uci\.edu/datasets\?"
     r")", re.I)
 
 def scraper(url, resp):
@@ -52,6 +57,10 @@ def normalize_url(url):
     # Removes default ports 
     if netloc.endswith(":80") or netloc.endswith(":443"):
         netloc = netloc.rsplit(":", 1)[0]
+
+    # www.ics.uci.edu always redirects to ics.uci.edu; treat them as one host
+    if netloc == "www.ics.uci.edu":
+        netloc = "ics.uci.edu"
     
     # Removes trailing slashes
     path = p.path.rstrip("/") or "/"
@@ -176,6 +185,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
+            + r"|h|c|cc|cpp|hpp|java|py|ipynb|sql|bib|ppsx|odp|odt|ods|war|apk|img|mat|npy|pkl|sh|patch|diff|svg|webp"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
 
     except TypeError:
