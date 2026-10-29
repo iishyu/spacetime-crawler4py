@@ -1,6 +1,5 @@
 import tokenizer
 import hashlib
-import heapq
 from collections import Counter
 import os,json
 from urllib.parse import urldefrag,urlparse
@@ -36,6 +35,19 @@ RAW_STOP_WORDS = {
     }
 
 STOP_WORDS = {tok for w in RAW_STOP_WORDS for tok in tokenizer.tokenize_text(w)}
+
+#Filters out stop words, letter, and numeric tokens
+def is_meaningful_word(word):
+    if word in STOP_WORDS:
+        return False
+
+    if len(word) < 2:
+        return False
+
+    if not any(c.isalpha() for c in word):
+        return False
+
+    return True
 
 class Database:
     def __init__(self):
@@ -115,16 +127,25 @@ class Database:
             self.fingerprints.add(self.generate_fingerprint(url_dict))
 
     def get_50_most_common(self):
-        most_common = self.words.most_common(50)
+        filtered_words = [
+            (word, count)
+            for word, count in self.words.items()
+            if is_meaningful_word(word)
+        ]
 
-        return most_common
+        filtered_words.sort(key=lambda item: (-item[1], item[0]))
+
+        return filtered_words[:50]
 
     def get_subdomains(self):
         subdomains = {}
         for url in self.db:
             clean_url, _ = urldefrag(url)
             hostname = urlparse(clean_url).hostname
-            if hostname is None or not hostname.endswith(".ics.uci.edu"):
+            if hostname is None or not (
+                hostname == "ics.uci.edu"
+                or hostname.endswith(".ics.uci.edu")
+            ):
                 continue
             if hostname not in subdomains:
                 subdomains[hostname] = set()
