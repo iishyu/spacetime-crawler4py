@@ -101,13 +101,12 @@ def extract_next_links(url, resp):
             # Skip near duplicates
             if database.is_similar(fingerprint):
                 database.add(page_url, {})
-                return links
+            else:
+                database.add(page_url, freqs)
 
-            database.add(page_url, freqs)
-
-            # save every 50 pages
-            if database.get_unique_page_count() % 50 == 0:
-                database.save()
+                # save every 50 pages
+                if database.get_unique_page_count() % 50 == 0:
+                    database.save()
 
     # Find all hyperlinks
     # searches HTML for <a> tags that have href attribute
