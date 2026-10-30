@@ -49,6 +49,9 @@ def is_meaningful_word(word):
 
     return True
 
+def is_word(word):
+    return len(word) >= 2 and any(c.isalpha() for c in word)
+
 class Database:
     def __init__(self):
         self.db = {}
@@ -66,7 +69,7 @@ class Database:
         url = None
         biggest_word_count = -1
         for pg, freqs in self.db.items():
-            word_count = sum(freqs.values())
+            word_count = sum(freq for word,freq in freqs.items() if is_word(word))
             if word_count>biggest_word_count:
                 biggest_word_count=word_count
                 url = pg
