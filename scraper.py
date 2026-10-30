@@ -104,12 +104,12 @@ def extract_next_links(url, resp):
     with database_lock:
         words = extract_words(soup)
         # If unique, add to database
-        if len(words)>=MIN_WORDS_THRESHOLD and not database.checked(page_url):
+        if not database.checked(page_url):
             freqs = tokenizer.computeWordFrequencies(words)
             fingerprint = database.generate_fingerprint(freqs)
 
             # Skip near duplicates
-            if database.is_similar(fingerprint):
+            if len(words) < MIN_WORDS_THRESHOLD or database.is_similar(fingerprint):
                 database.add(page_url, {})
             else:
                 database.add(page_url, freqs)
