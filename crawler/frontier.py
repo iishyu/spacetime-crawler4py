@@ -103,3 +103,13 @@ class Frontier(object):
                 not any(self.to_be_downloaded.values())
                 and self.active_workers == 0
             )
+
+    def wait_until_ready(self, url):
+        dom = domain_of(url)
+        while True:
+            with self.lock:
+                now = time.monotonic()
+                if self.next_ok[dom]<=now:
+                    self.next_ok[dom] = now+.5
+                    return
+            time.sleep(.1)

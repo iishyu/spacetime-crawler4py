@@ -8,6 +8,7 @@ from utils.Database import Database
 
 database = Database()
 database_lock = threading.Lock()
+MIN_WORDS_THRESHOLD = 25
 MAX_BYTES_THRESHOLD = 5 * 1024**2
 TRAP = re.compile(
     # calendars, iCal exports, /YYYY/MM/ archives, date params, Apache sort links
@@ -101,9 +102,9 @@ def extract_next_links(url, resp):
         return links
 
     with database_lock:
+        words = extract_words(soup)
         # If unique, add to database
-        if not database.checked(page_url):
-            words = extract_words(soup)
+        if len(words)>=MIN_WORDS_THRESHOLD and not database.checked(page_url):
             freqs = tokenizer.computeWordFrequencies(words)
             fingerprint = database.generate_fingerprint(freqs)
 
