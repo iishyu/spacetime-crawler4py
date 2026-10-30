@@ -1,212 +1,212 @@
 {
-  "unique_pages": 8521,
+  "unique_pages": 25570,
   "longest_page": {
-    "url": "https://ics.uci.edu/~cs224",
-    "word_count": 83259
+    "url": "http://dynamo.ics.uci.edu/files/zImage_paapi",
+    "word_count": 109056
   },
   "most_common_words": [
     [
       "married",
-      29400
-    ],
-    [
-      "1",
-      25450
-    ],
-    [
-      "2",
-      19636
+      29441
     ],
     [
       "may",
-      18264
-    ],
-    [
-      "jan",
-      15318
-    ],
-    [
-      "dec",
-      14996
-    ],
-    [
-      "3",
-      14995
-    ],
-    [
-      "mar",
-      14976
-    ],
-    [
-      "ny",
-      14781
-    ],
-    [
-      "jun",
-      14530
-    ],
-    [
-      "10",
-      13983
-    ],
-    [
-      "e",
-      13785
-    ],
-    [
-      "sep",
-      13684
-    ],
-    [
-      "oct",
-      13654
-    ],
-    [
-      "4",
-      13520
-    ],
-    [
-      "apr",
-      13481
-    ],
-    [
-      "feb",
-      13470
-    ],
-    [
-      "jul",
-      13296
+      23018
     ],
     [
       "will",
-      13217
+      21349
     ],
     [
-      "aug",
-      13197
-    ],
-    [
-      "5",
-      13163
-    ],
-    [
-      "nov",
-      13107
+      "next",
+      17009
     ],
     [
       "ics",
-      12613
-    ],
-    [
-      "5x",
-      12180
-    ],
-    [
-      "n",
-      11434
-    ],
-    [
-      "0",
-      11332
-    ],
-    [
-      "4x",
-      11293
-    ],
-    [
-      "5o",
-      11119
-    ],
-    [
-      "4o",
-      10910
-    ],
-    [
-      "data",
-      10557
-    ],
-    [
-      "uci",
-      10254
-    ],
-    [
-      "information",
-      9950
-    ],
-    [
-      "6",
-      9690
-    ],
-    [
-      "p",
-      9601
-    ],
-    [
-      "research",
-      9322
-    ],
-    [
-      "8",
-      9269
-    ],
-    [
-      "15",
-      9235
-    ],
-    [
-      "7",
-      9182
-    ],
-    [
-      "family",
-      9049
+      16916
     ],
     [
       "one",
-      9040
+      16702
     ],
     [
-      "12",
-      9017
+      "jan",
+      15590
     ],
     [
-      "11",
-      8861
+      "dec",
+      15268
     ],
     [
-      "18",
-      8746
+      "mar",
+      15127
     ],
     [
-      "c",
-      8727
+      "jun",
+      14796
     ],
     [
-      "l",
-      8665
+      "ny",
+      14765
     ],
     [
-      "9",
-      8402
+      "technical",
+      14333
     ],
     [
-      "computer",
-      8129
+      "oct",
+      13912
+    ],
+    [
+      "4x",
+      13889
+    ],
+    [
+      "sep",
+      13889
+    ],
+    [
+      "feb",
+      13720
+    ],
+    [
+      "apr",
+      13703
+    ],
+    [
+      "aug",
+      13428
+    ],
+    [
+      "size",
+      13404
+    ],
+    [
+      "jul",
+      13375
+    ],
+    [
+      "nov",
+      13360
+    ],
+    [
+      "information",
+      13335
+    ],
+    [
+      "data",
+      13262
+    ],
+    [
+      "image",
+      13082
+    ],
+    [
+      "details",
+      12922
+    ],
+    [
+      "uci",
+      12666
+    ],
+    [
+      "research",
+      12355
+    ],
+    [
+      "time",
+      12349
+    ],
+    [
+      "5x",
+      12187
+    ],
+    [
+      "original",
+      12124
+    ],
+    [
+      "prev",
+      11977
+    ],
+    [
+      "taken",
+      11631
     ],
     [
       "ramesh",
-      8105
+      11615
     ],
     [
-      "20",
-      8096
+      "computer",
+      11334
     ],
     [
-      "o",
-      8083
+      "iso",
+      11194
+    ],
+    [
+      "5o",
+      11144
+    ],
+    [
+      "4o",
+      10920
+    ],
+    [
+      "use",
+      10079
+    ],
+    [
+      "family",
+      9850
+    ],
+    [
+      "software",
+      9573
+    ],
+    [
+      "students",
+      9533
+    ],
+    [
+      "first",
+      9378
+    ],
+    [
+      "canon",
+      9361
+    ],
+    [
+      "eos",
+      9329
+    ],
+    [
+      "equiv",
+      9303
+    ],
+    [
+      "using",
+      8990
+    ],
+    [
+      "new",
+      8645
+    ],
+    [
+      "also",
+      8438
+    ],
+    [
+      "program",
+      8385
+    ],
+    [
+      "two",
+      8267
     ]
   ],
-  "ics_subdomain_count": 74,
+  "ics_subdomain_count": 80,
   "ics_subdomains": [
     [
       "http://accessibility.ics.uci.edu",
@@ -222,11 +222,15 @@
     ],
     [
       "http://archive.ics.uci.edu",
-      216
+      28
     ],
     [
       "http://asterix.ics.uci.edu",
-      10
+      14
+    ],
+    [
+      "http://casa.ics.uci.edu",
+      5
     ],
     [
       "http://cert.ics.uci.edu",
@@ -238,15 +242,15 @@
     ],
     [
       "http://chenli.ics.uci.edu",
-      8
+      9
     ],
     [
       "http://cloudberry.ics.uci.edu",
-      4
+      3
     ],
     [
       "http://cml.ics.uci.edu",
-      34
+      202
     ],
     [
       "http://code.ics.uci.edu",
@@ -254,7 +258,7 @@
     ],
     [
       "http://computableplant.ics.uci.edu",
-      85
+      88
     ],
     [
       "http://containers.ics.uci.edu",
@@ -263,6 +267,10 @@
     [
       "http://courselisting.ics.uci.edu",
       2
+    ],
+    [
+      "http://cradl.ics.uci.edu",
+      15
     ],
     [
       "http://create.ics.uci.edu",
@@ -274,19 +282,19 @@
     ],
     [
       "http://dale-cooper-v0.ics.uci.edu",
-      30
+      64
     ],
     [
       "http://ds4all.ics.uci.edu",
-      6
+      9
     ],
     [
       "http://duttgroup.ics.uci.edu",
-      43
+      46
     ],
     [
       "http://dynamo.ics.uci.edu",
-      1
+      32
     ],
     [
       "http://e2.ics.uci.edu",
@@ -298,7 +306,7 @@
     ],
     [
       "http://emj.ics.uci.edu",
-      33
+      32
     ],
     [
       "http://evoke.ics.uci.edu",
@@ -306,7 +314,7 @@
     ],
     [
       "http://flamingo.ics.uci.edu",
-      146
+      7
     ],
     [
       "http://fr.ics.uci.edu",
@@ -322,7 +330,7 @@
     ],
     [
       "http://grape.ics.uci.edu",
-      168
+      159
     ],
     [
       "http://graphics.ics.uci.edu",
@@ -345,8 +353,16 @@
       3
     ],
     [
+      "http://i-sensorium.ics.uci.edu",
+      5
+    ],
+    [
       "http://icde2023.ics.uci.edu",
       45
+    ],
+    [
+      "http://ics.uci.edu",
+      20835
     ],
     [
       "http://industryshowcase.ics.uci.edu",
@@ -354,7 +370,7 @@
     ],
     [
       "http://informatics.ics.uci.edu",
-      26
+      27
     ],
     [
       "http://intranet.ics.uci.edu",
@@ -366,7 +382,7 @@
     ],
     [
       "http://isg.ics.uci.edu",
-      269
+      205
     ],
     [
       "http://isi-buds.ics.uci.edu",
@@ -386,7 +402,7 @@
     ],
     [
       "http://mailman.ics.uci.edu",
-      39
+      40
     ],
     [
       "http://malek.ics.uci.edu",
@@ -403,10 +419,6 @@
     [
       "http://mhcid.ics.uci.edu",
       17
-    ],
-    [
-      "http://mover.ics.uci.edu",
-      23
     ],
     [
       "http://mswe.ics.uci.edu",
@@ -426,7 +438,7 @@
     ],
     [
       "http://ngs.ics.uci.edu",
-      1374
+      1999
     ],
     [
       "http://oai.ics.uci.edu",
@@ -441,8 +453,16 @@
       3
     ],
     [
+      "http://sana.ics.uci.edu",
+      4
+    ],
+    [
+      "http://scale.ics.uci.edu",
+      7
+    ],
+    [
       "http://seal.ics.uci.edu",
-      44
+      46
     ],
     [
       "http://sherlock.ics.uci.edu",
@@ -451,6 +471,10 @@
     [
       "http://signage.ics.uci.edu",
       2
+    ],
+    [
+      "http://sparcfire.ics.uci.edu",
+      3
     ],
     [
       "http://speedtest.ics.uci.edu",
@@ -490,11 +514,11 @@
     ],
     [
       "http://vision.ics.uci.edu",
-      219
+      220
     ],
     [
       "http://wiki.ics.uci.edu",
-      940
+      942
     ],
     [
       "http://www-db.ics.uci.edu",
@@ -502,7 +526,7 @@
     ],
     [
       "http://xtune.ics.uci.edu",
-      5
+      6
     ]
   ]
 }
