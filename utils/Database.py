@@ -165,6 +165,9 @@ class Database:
         vec = [0] * 64
 
         for word, freq in freqs.items():
+            if word in STOP_WORDS:
+                continue
+
             digest = hashlib.md5(word.encode("utf-8")).digest()
             h = int.from_bytes(digest[:8], "big")
 
