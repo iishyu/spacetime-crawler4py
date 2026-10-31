@@ -4,8 +4,8 @@ CRAWLER REPORT
 25570
 
 2. LONGEST PAGE
-URL: http://dynamo.ics.uci.edu/files/zImage_paapi
-Word count: 109056
+URL: https://ics.uci.edu/~eppstein/pubs/pubs.ff
+Word count: 55298
 
 3. TOP 50 MOST COMMON WORDS
 married, 29441
